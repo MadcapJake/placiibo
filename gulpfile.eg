@@ -1,0 +1,34 @@
+require-macros:
+   earl-gulp -> task
+
+require:
+   gulp, gulp-util, gulp-earl
+   browserify, earlify, vinyl-buffer
+   vinyl-source-stream as source-stream
+   gulp-sourcemaps as sourcemaps
+
+task server:
+   chain gulp:
+      @src("./src/server/**/*.eg")
+      @pipe(sourcemaps.init())
+      @pipe(gulp-earl())
+      @pipe(sourcemaps.write("./"))
+      @pipe(gulp.dest("./build/server/"))
+
+task client:
+   bundler = browserify with {
+      entries = './src/client/index.js'
+      debug = true
+      transform: {earlify}
+   }
+   chain bundler.bundle():
+      @pipe(source-stream('index.js'))
+      @pipe(vinyl-buffer())
+      @pipe(sourcemaps.init())
+      @pipe(earlify())
+      @on 'error': gulp-util.log
+      @pipe(sourcemaps.write('./'))
+      @pipe(gulp.dest('./build/client/'))
+
+
+task default < {server, client}
