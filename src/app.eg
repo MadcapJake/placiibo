@@ -1,0 +1,52 @@
+require:
+   koa() as app
+   koa-router as Router
+   koa-mount as mount
+   koa-logger() as logger
+   koa-views as views
+   koa-static as serve
+   koa-formidable as formidable
+   ;;koa-better-ratelimit as limit
+   ;;koa-compress as compress
+
+APIv1 = new Router()
+chain APIv1:
+   @use: views('views') with {
+      map = {html='mustache'}
+      default = 'mustache'
+   }
+   @get '/': gen with next ->
+      yield this.render("index") with {
+         title = "Placiibo"
+         label = "Click here!"
+         blue = true
+      }
+   @get '/custom/:label': gen with next ->
+      yield this.render("index") with {
+         title = 'Placiibo - {this.params["label"]}'
+         label = this.params["label"]
+         blue = true
+      }
+   @get '/custom/:label/:color': gen with next ->
+      var state = {
+         title = 'Placiibo - {this.params["label"]}'
+         label = this.params["label"]
+      }
+      state[this.params["color"]] = true
+      yield this.render("index") with state
+   @use: formidable()
+   @post '/save': gen with next ->
+      url = '/custom/'
+      \ + '{this.request.body["label"]}/'
+      \ + '{this.request.body["color"]}'
+      print url
+      this.redirect(url)
+      this.status = 301
+
+chain app:
+   @use: logger
+   @use: serve("/home/jrusso/github/placiibo/public")
+   @use: mount '/': APIv1.middleware()
+   @listen: 3000
+
+print "Placiibo is running on port 3000"

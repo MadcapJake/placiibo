@@ -1,0 +1,20 @@
+{
+  "name": "placiibo",
+  "version": "0.0.1",
+  "authors": [
+    "Jake Russo <madcap.russo@gmail.com>"
+  ],
+  "description": "The Button App",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "Buttons": "~2.0.0"
+  }
+}
