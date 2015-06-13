@@ -9,26 +9,26 @@ require:
 
 task server:
    chain gulp:
-      @src("./src/server/**/*.eg")
+      @src("./src/*.eg")
       @pipe(sourcemaps.init())
       @pipe(gulp-earl())
       @pipe(sourcemaps.write("./"))
-      @pipe(gulp.dest("./build/server/"))
+      @pipe(gulp.dest("./dist/"))
 
 task client:
    bundler = browserify with {
-      entries = './src/client/index.js'
+      entries = './public/eg/index.eg'
       debug = true
       transform: {earlify}
    }
    chain bundler.bundle():
-      @pipe(source-stream('index.js'))
+      @pipe(source-stream('index.eg'))
       @pipe(vinyl-buffer())
       @pipe(sourcemaps.init())
       @pipe(earlify())
       @on 'error': gulp-util.log
       @pipe(sourcemaps.write('./'))
-      @pipe(gulp.dest('./build/client/'))
+      @pipe(gulp.dest('./dist/public/js/'))
 
 
 task default < {server, client}
